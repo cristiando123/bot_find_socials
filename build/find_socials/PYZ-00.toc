@@ -1,4 +1,4 @@
-('c:\\Users\\yanya\\Downloads\\find_ceo_social\\build\\find_socials\\PYZ-00.pyz',
+('c:\\Users\\yanya\\Desktop\\bot_find_socials\\build\\find_socials\\PYZ-00.pyz',
  [('PIL',
    'C:\\Users\\yanya\\anaconda3\\lib\\site-packages\\PIL\\__init__.py',
    'PYMODULE'),

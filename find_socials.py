@@ -25,7 +25,7 @@ def search_twitter_profile():
         output_workbook = Workbook()
         output_sheet = output_workbook.active
 
-        output_sheet.append(["CEO Name", "Results"])
+        output_sheet.append(["CEO Name","Company Name" ,"Keywords" ,"Results"])
 
         
 
@@ -63,9 +63,9 @@ def search_twitter_profile():
                         break
 
                 if twitter_links:
-                    output_sheet.append([ceo_name, '\n'.join(twitter_links)])
+                    output_sheet.append([ceo_name,company_name,keywords, '\n'.join(twitter_links)])
                 else:
-                    output_sheet.append([ceo_name, "No Twitter links found."])
+                    output_sheet.append([ceo_name,company_name,keywords, "No Twitter links found."])
 
         # Save the output workbook with the Twitter profiles for each row
         output_file_path = "output_twitter_file.xlsx"
@@ -88,7 +88,7 @@ def search_facebook_profile():
         output_workbook = Workbook()
         output_sheet = output_workbook.active
 
-        output_sheet.append(["CEO Name", "Results"])
+        output_sheet.append(["CEO Name","Company Name" ,"Keywords" , "Results"])
 
         # Loop through each row in the input sheet
         for row in input_sheet.iter_rows(min_row=2, values_only=True):  
@@ -124,9 +124,9 @@ def search_facebook_profile():
                         break
 
                 if facebook_links:
-                    output_sheet.append([ceo_name, '\n'.join(facebook_links)])
+                    output_sheet.append([ceo_name,company_name,keywords, '\n'.join(facebook_links)])
                 else:
-                    output_sheet.append([ceo_name, "No Facebook links found."])
+                    output_sheet.append([ceo_name,company_name,keywords, "No Facebook links found."])
 
         # Save the output workbook with the Twitter profiles for each row
         output_file_path = "output_facebook_file.xlsx"
