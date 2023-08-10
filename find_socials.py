@@ -31,11 +31,12 @@ def search_twitter_profile():
 
         # Loop through each row in the input sheet
         for row in input_sheet.iter_rows(min_row=2, values_only=True):  # Assuming the data starts from the 2nd row
-            company_name = row[1] if row[1] else ""
-            ceo_name =  row[0] if row[0] else ""
-            keywords = row [2] if row[2] else ""
+            if any(cell_value is not None and cell_value != "" for cell_value in row):
+                company_name = row[1] if row[1] else ""
+                ceo_name =  row[0] if row[0] else ""
+                keywords = row [2] if row[2] else ""
 
-            if company_name and company_name:
+                
                 query = f"{company_name} {ceo_name} {keywords} Twitter account"
                 query = query.replace(" ", "%20")
 
@@ -91,12 +92,13 @@ def search_facebook_profile():
         output_sheet.append(["CEO Name","Company Name" ,"Keywords" , "Results"])
 
         # Loop through each row in the input sheet
-        for row in input_sheet.iter_rows(min_row=2, values_only=True):  
-            company_name = row[1] if row[1] else ""
-            ceo_name =  row[0] if row[0] else ""
-            keywords = row [2] if row[2] else ""
-            
-            if company_name and company_name:
+        for row in input_sheet.iter_rows(min_row=2, values_only=True):
+            if any(cell_value is not None and cell_value != "" for cell_value in row): 
+                company_name = row[1] if row[1] else ""
+                ceo_name =  row[0] if row[0] else ""
+                keywords = row [2] if row[2] else ""
+                
+                #if company_name and company_name:
                 query = f"{company_name} {ceo_name} {keywords} Facebook account"
                 query = query.replace(" ", "%20")
 
@@ -138,7 +140,7 @@ def search_facebook_profile():
 
 
 root = tk.Tk()
-root.title("Find twitter account")
+root.title("Find Twitter/Facebook account")
 
 # create the main frame
 main_frame = tk.Frame(root, padx=10, pady=10)
