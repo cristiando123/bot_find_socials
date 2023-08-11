@@ -6,6 +6,7 @@ import openpyxl
 from openpyxl import Workbook
 import tkinter as tk
 from tkinter import filedialog
+import undetected_chromedriver as uc
 
 def select_file():
     file_path = filedialog.askopenfilename(filetypes=(("All files", "*"),))
@@ -42,7 +43,7 @@ def search_twitter_profile():
 
                 search_url = f"https://www.google.com/search?q={query}"
 
-                driver = webdriver.Chrome()
+                driver = uc.Chrome()
                 driver.get(search_url)
                 driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.END)
                 page_source = driver.page_source
@@ -104,7 +105,7 @@ def search_facebook_profile():
 
                 search_url = f"https://www.google.com/search?q={query}"
 
-                driver = webdriver.Chrome()
+                driver = uc.Chrome()
                 driver.get(search_url)
                 driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.END)
                 page_source = driver.page_source
@@ -166,7 +167,7 @@ def search_linkedin_profile():
 
                 search_url = f"https://www.google.com/search?q={query}"
 
-                driver = webdriver.Chrome()
+                driver = uc.Chrome()
                 driver.get(search_url)
                 driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.END)
                 page_source = driver.page_source
@@ -201,7 +202,7 @@ def search_linkedin_profile():
         status_label.config(text="Error occurred while processing the Excel file.")
 
 root = tk.Tk()
-root.title("Find Twitter/Facebook account")
+root.title("Find Social Media account")
 
 # create the main frame
 main_frame = tk.Frame(root, padx=10, pady=10)
