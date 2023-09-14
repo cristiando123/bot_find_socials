@@ -7,6 +7,17 @@ from openpyxl import Workbook
 import tkinter as tk
 from tkinter import filedialog
 import undetected_chromedriver as uc
+import re
+
+
+
+
+def clean_input(input_str):
+    # Loại bỏ các ký tự đặc biệt, chỉ giữ lại ký tự chữ cái và dấu cách
+    cleaned_str = re.sub(r'[^a-zA-Z\s]', '', input_str)
+    return cleaned_str
+
+
 
 def select_file():
     file_path = filedialog.askopenfilename(filetypes=(("All files", "*"),))
@@ -26,24 +37,22 @@ def search_twitter_profile():
         output_workbook = Workbook()
         output_sheet = output_workbook.active
 
-        output_sheet.append(["CEO Name","Company Name" ,"Keywords" ,"Results"])
-
-        
+        output_sheet.append(["CEO Name", "Company Name", "Keywords", "Results"])
 
         # Loop through each row in the input sheet
-        for row in input_sheet.iter_rows(min_row=2, values_only=True):  # Assuming the data starts from the 2nd row
+        for row in input_sheet.iter_rows(min_row=2, values_only=True):
             if any(cell_value is not None and cell_value != "" for cell_value in row):
+                ceo_name = row[0] if row[0] else ""
                 company_name = row[1] if row[1] else ""
-                ceo_name =  row[0] if row[0] else ""
-                keywords = row [2] if row[2] else ""
+                keywords = row[2] if row[2] else ""
 
-                
                 query = f"{company_name} {ceo_name} {keywords} Twitter account"
                 query = query.replace(" ", "%20")
 
                 search_url = f"https://www.google.com/search?q={query}"
 
-                driver = uc.Chrome()
+                # Use regular Chrome WebDriver
+                driver = webdriver.Chrome()
                 driver.get(search_url)
                 driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.END)
                 page_source = driver.page_source
@@ -52,27 +61,29 @@ def search_twitter_profile():
                 soup = BeautifulSoup(page_source, "html.parser")
                 search_results = soup.find_all('a', href=True)  # Find all anchor tags with href attribute
 
-                twitter_links = []
-                count = 0  # Counter for the number of Twitter links collected
+                for row in input_sheet.iter_rows(min_row=2, values_only=True):
+    # ... (Các phần mã khác)
 
-                for result in search_results:
-                    link = result['href']
-                    if 'twitter.com' in link:
-                        twitter_links.append(link)
-                        count += 1
+                    twitter_links = []  # Danh sách các liên kết Twitter cho từng dòng
 
-                    if count == 3:  # If three Twitter links are found, break the loop
-                        break
+                    for result in search_results:
+                        link = result['href']
+                        if 'twitter.com' in link:
+                            twitter_links.append(link)
 
-                if twitter_links:
-                    output_sheet.append([ceo_name,company_name,keywords, '\n'.join(twitter_links)])
-                else:
-                    output_sheet.append([ceo_name,company_name,keywords, "No Twitter links found."])
-
+                    # Thêm danh sách liên kết Twitter vào dòng đầu ra
+                    if twitter_links:
+                        for twitter_link in twitter_links:
+                            output_sheet.append([ceo_name, company_name, keywords, twitter_link])
+                    else:
+        # Nếu không có liên kết Twitter, thêm một dòng với thông báo "No Twitter links found."
+                        output_sheet.append([ceo_name, company_name, keywords, "No Twitter links found."])
         # Save the output workbook with the Twitter profiles for each row
         output_file_path = "output_twitter_file.xlsx"
         output_workbook.save(output_file_path)
         status_label.config(text=f"Output saved to: {output_file_path}")
+
+
 
     except Exception as e:
         status_label.config(text="Error occurred while processing the Excel file.")
@@ -105,7 +116,7 @@ def search_facebook_profile():
 
                 search_url = f"https://www.google.com/search?q={query}"
 
-                driver = uc.Chrome()
+                driver = webdriver.Chrome()
                 driver.get(search_url)
                 driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.END)
                 page_source = driver.page_source
