@@ -8,6 +8,7 @@ import tkinter as tk
 from tkinter import filedialog
 import undetected_chromedriver as uc
 import re
+import os
 
 
 
@@ -106,9 +107,9 @@ def search_facebook_profile():
         # Loop through each row in the input sheet
         for row in input_sheet.iter_rows(min_row=2, values_only=True):
             if any(cell_value is not None and cell_value != "" for cell_value in row): 
+                ceo_name = row[0] if row[0] else ""
                 company_name = row[1] if row[1] else ""
-                ceo_name =  row[0] if row[0] else ""
-                keywords = row [2] if row[2] else ""
+                keywords = row[2] if row[2] else ""
                 
                 #if company_name and company_name:
                 query = f"{company_name} {ceo_name} {keywords} Facebook account"
@@ -125,22 +126,24 @@ def search_facebook_profile():
                 soup = BeautifulSoup(page_source, "html.parser")
                 search_results = soup.find_all('a', href=True)  # Find all anchor tags with href attribute
 
-                facebook_links = []
-                count = 0  # Counter for the number of Twitter links collected
+                
+                for row in input_sheet.iter_rows(min_row=2, values_only=True):
+    # ... (Các phần mã khác)
 
-                for result in search_results:
-                    link = result['href']
-                    if 'facebook.com' in link:
-                        facebook_links.append(link)
-                        count += 1
+                    facebook_links = []  # Danh sách các liên kết Twitter cho từng dòng
 
-                    if count == 3:  # If three Twitter links are found, break the loop
-                        break
+                    for result in search_results:
+                        link = result['href']
+                        if 'facebook.com' in link:
+                            facebook_links.append(link)
 
-                if facebook_links:
-                    output_sheet.append([ceo_name,company_name,keywords, '\n'.join(facebook_links)])
-                else:
-                    output_sheet.append([ceo_name,company_name,keywords, "No Facebook links found."])
+                    # Thêm danh sách liên kết Twitter vào dòng đầu ra
+                    if facebook_links:
+                        for twitter_link in facebook_links:
+                            output_sheet.append([ceo_name, company_name, keywords, facebook_links])
+                    else:
+        # Nếu không có liên kết Twitter, thêm một dòng với thông báo "No Twitter links found."
+                        output_sheet.append([ceo_name, company_name, keywords, "No facebook links found."])
 
         # Save the output workbook with the Twitter profiles for each row
         output_file_path = "output_facebook_file.xlsx"
@@ -168,9 +171,9 @@ def search_linkedin_profile():
         # Loop through each row in the input sheet
         for row in input_sheet.iter_rows(min_row=2, values_only=True):
             if any(cell_value is not None and cell_value != "" for cell_value in row): 
+                ceo_name = row[0] if row[0] else ""
                 company_name = row[1] if row[1] else ""
-                ceo_name =  row[0] if row[0] else ""
-                keywords = row [2] if row[2] else ""
+                keywords = row[2] if row[2] else ""
                 
                 #if company_name and company_name:
                 query = f"{company_name} {ceo_name} {keywords} LinkedIn account"
@@ -178,7 +181,7 @@ def search_linkedin_profile():
 
                 search_url = f"https://www.google.com/search?q={query}"
 
-                driver = uc.Chrome()
+                driver = webdriver.Chrome()
                 driver.get(search_url)
                 driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.END)
                 page_source = driver.page_source
@@ -187,22 +190,37 @@ def search_linkedin_profile():
                 soup = BeautifulSoup(page_source, "html.parser")
                 search_results = soup.find_all('a', href=True)  # Find all anchor tags with href attribute
 
-                linkedin_links = []
-                count = 0  # Counter for the number of linkedin links collected
+                for row in input_sheet.iter_rows(min_row=2, values_only=True):
+                    linkedin_links = []
+                    for result in search_results:
+                            link = result['href']
+                            if 'linkedin.com' in link:
+                                linkedin_links.append(link)
 
-                for result in search_results:
-                    link = result['href']
-                    if 'linkedin.com' in link:
-                        linkedin_links.append(link)
-                        count += 1
+                    if linkedin_links:
+                        for linkedin_links in linkedin_links:
+                            output_sheet.append([ceo_name, company_name, keywords, linkedin_links])
+                    else:
+                        output_sheet.append([ceo_name, company_name, keywords, "No linkedin links found."])
+                
+                
+                
+                # linkedin_links = []
+                # count = 0  # Counter for the number of linkedin links collected
 
-                    if count == 3:  # If three linkedin links are found, break the loop
-                        break
+                # for result in search_results:
+                #     link = result['href']
+                #     if 'linkedin.com' in link:
+                #         linkedin_links.append(link)
+                #         count += 1
 
-                if linkedin_links:
-                    output_sheet.append([ceo_name,company_name,keywords, '\n'.join(linkedin_links)])
-                else:
-                    output_sheet.append([ceo_name,company_name,keywords, "No LinkedIn links found."])
+                #     if count == 3:  # If three linkedin links are found, break the loop
+                #         break
+
+                # if linkedin_links:
+                #     output_sheet.append([ceo_name,company_name,keywords, '\n'.join(linkedin_links)])
+                # else:
+                #     output_sheet.append([ceo_name,company_name,keywords, "No LinkedIn links found."])
 
         # Save the output workbook with the linkedin profiles for each row
         output_file_path = "output_linkedin_file.xlsx"
@@ -210,6 +228,7 @@ def search_linkedin_profile():
         status_label.config(text=f"Output saved to: {output_file_path}")
 
     except Exception as e:
+        print(f"An error occurred: {str(e)}")
         status_label.config(text="Error occurred while processing the Excel file.")
 
 root = tk.Tk()
